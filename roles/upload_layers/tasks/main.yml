@@ -1,0 +1,10 @@
+- name: Upload the zipped packages to Lambda layers
+  shell: |
+    /usr/bin/aws lambda publish-layer-version \
+    --layer-name automation-layer-{{ item }} \
+    --description "custom layer for {{ item }}" \
+    --compatible-runtimes python3.9 \
+    --content fileb://{{ item }}_layer.zip
+  args:
+    chdir: /opt/py39_layers
+  with_items: "{{ layers }}"
