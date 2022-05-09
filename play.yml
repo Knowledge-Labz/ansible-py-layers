@@ -1,0 +1,6 @@
+- hosts: target
+  become: yes
+  roles:
+    - role: compile_python
+    - role: generate_layers
+    - role: upload_layers
