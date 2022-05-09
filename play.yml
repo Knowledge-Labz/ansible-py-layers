@@ -1,4 +1,4 @@
-- hosts: target
+- hosts: localhost
   become: yes
   roles:
     - role: compile_python
