@@ -11,7 +11,9 @@
     creates: /tmp/Python-{{ python_version }}
 
 - name: compile the python source
-  shell: /usr/bin/cd /tmp/Python-{{ python_version }} && ./configure --enable-optimizations && make altinstall
+  shell: ./configure --enable-optimizations && make altinstall
+  args:
+    chdir: /tmp/Python-{{ python_version }}
 
 - name: ensure pip is up-to-date
   shell: /usr/local/bin/pip{{ python_major_version }} install --upgrade pip

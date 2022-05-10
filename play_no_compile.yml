@@ -1,0 +1,5 @@
+- hosts: localhost
+  become: yes
+  roles:
+    - role: generate_layers
+    - role: upload_layers

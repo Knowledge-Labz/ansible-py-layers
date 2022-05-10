@@ -1,3 +1,6 @@
+- name: install any pre-requisites to our python packages
+  yum:
+    name: "{{ prereqs }}"
 - name: Ensure our work directory is there
   file:
     path: /opt/py39_layers
