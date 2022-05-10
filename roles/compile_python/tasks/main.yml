@@ -7,7 +7,7 @@
   shell: /usr/bin/tar xzf /tmp/Python-{{ python_version }}.tgz
 
 - name: compile the python source
-  shell: /usr/bin/cd Python-{{ python_version }} && ./configure --enable-optimizations && make altinstall
+  shell: /usr/bin/cd /tmp/Python-{{ python_version }} && ./configure --enable-optimizations && make altinstall
 
 - name: ensure pip is up-to-date
   shell: /usr/local/bin/pip{{ python_major_version }} install --upgrade pip
