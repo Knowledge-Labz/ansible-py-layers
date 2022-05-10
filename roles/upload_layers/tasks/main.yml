@@ -1,6 +1,6 @@
 - name: Upload the zipped packages to Lambda layers
   shell: |
-    /usr/bin/aws lambda publish-layer-version \
+    EXPORT LANG=en_US.UTF-8 && /usr/bin/aws lambda publish-layer-version \
     --layer-name automation-layer-{{ item }} \
     --description "custom layer for {{ item }}" \
     --compatible-runtimes python3.9 \
