@@ -12,14 +12,20 @@
     state: directory
   with_items: "{{ layers }}"
 
+- name: Ensure we have a python directory per defined layers to unpack in Lambda
+  file:
+    path: /opt/py39_layers/{{ item }}/python
+    state: directory
+  with_items: "{{ layers }}"
+
 - name: iterate over layers and locally install them to their own directory
   shell: /usr/local/bin/pip{{ python_major_version }} install {{ item }} -t . --upgrade
   args:
-    chdir: /opt/py39_layers/{{ item }}
+    chdir: /opt/py39_layers/{{ item }}/python
   with_items: "{{ layers }}"
 
 - name: iterate over layers and zip them for Lambda to use
-  shell: EXPORT LANG=en_US.UTF-8 && /usr/bin/zip -r ../{{ item }}_layer.zip .
+  shell: /usr/bin/zip -r ../{{ item }}_layer.zip .
   args:
     chdir: /opt/py39_layers/{{ item }}
   with_items: "{{ layers }}"
