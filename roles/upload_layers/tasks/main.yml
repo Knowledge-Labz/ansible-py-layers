@@ -1,10 +1,27 @@
 - name: Upload the zipped packages to Lambda layers
   shell: |
-    /usr/bin/aws lambda publish-layer-version \
+    aws lambda publish-layer-version \
     --layer-name {{ whos_your_daddy }}-layer-{{ item }} \
     --description "custom layer for {{ item }}" \
-    --compatible-runtimes python3.9 \
+    --compatible-runtimes python{{ python_major_version }} \ 
     --zip-file fileb://{{ item }}_layer.zip
+  args:
+    chdir: /opt/py39_layers
+  with_items: "{{ layers }}"
+
+- name: Grant permissions!
+  shell: |
+    LATEST=$(aws lambda list-layer-versions \
+    --layer-name {{ whos_your_daddy }}-layer-{{ item }} \
+    --query 'LayerVersions[0].LayerVersionArn')
+    TRIMMED=$(echo $LATEST | sed 's/\"//g')
+    aws lambda add-layer-version-permission \ 
+    --layer-name {{ whos_your_daddy }}-layer-{{ item }} \
+    --version-number ${TRIMMED: -1} \ 
+    --statement-id {{ whos_your_daddy }}-layer-{{ item }} \ 
+    --principal 090557460597 \
+    --action lambda:GetLayerVersion \ 
+
   args:
     chdir: /opt/py39_layers
   with_items: "{{ layers }}"

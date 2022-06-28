@@ -1,0 +1,23 @@
+#init
+version: 0.2
+phases:
+  install:
+    commands:
+      - aws --version
+      - python --version
+      - python3 --version
+  pre_build:
+    commands:
+      - echo Logging in to CMI Amazon ECR...
+      - sudo amazon-linux-extras install ansible2 -y
+      - ansible --version
+      - sudo yum update ansible2 -y
+      - ansible --version
+  build:
+    commands:
+      - echo starting build `date`
+      - ls -la
+      - ansible-playbook -D play_no_compile.yml
+  post_build:
+    commands:
+      - echo post build `date`
