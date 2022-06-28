@@ -17,7 +17,7 @@ phases:
     commands:
       - echo starting build `date`
       - ls -la
-      - ansible-playbook -D play_no_compile.yml
+      - ansible-playbook -D play.yml
   post_build:
     commands:
       - echo post build `date`

@@ -19,9 +19,7 @@
     --layer-name {{ whos_your_daddy }}-layer-{{ item }} \
     --version-number ${TRIMMED: -1} \ 
     --statement-id {{ whos_your_daddy }}-layer-{{ item }} \ 
-    --principal 090557460597 \
-    --action lambda:GetLayerVersion \ 
-
-  args:
-    chdir: /opt/py39_layers
+    --principal "*" \
+    --organization-id {{ organization_id }} \ 
+    --action lambda:GetLayerVersion
   with_items: "{{ layers }}"
