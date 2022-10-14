@@ -8,3 +8,17 @@ layers:
   - pytz
   - requests
   - sqlalchemy
+
+combined_layers:
+  - name: classicpack
+    packages:
+      - pandas
+      - numpy
+      - psycopg2-binary
+      - requests
+      - sqlalchemy
+  - name: multimedia
+    packages:
+      - Pillow
+      - openpyxl
+      - PyPDF2

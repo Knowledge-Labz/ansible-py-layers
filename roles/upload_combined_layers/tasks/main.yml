@@ -1,36 +1,36 @@
 - name: Upload the zipped packages to Lambda layers
   shell: |
     LATEST=$(aws lambda list-layer-versions \
-    --layer-name {{ whos_your_daddy }}-layer-{{ item }} \
+    --layer-name {{ whos_your_daddy }}-layer-{{ item.name }} \
     --query 'LayerVersions[0].LayerVersionArn')
     TRIMMED=$(echo $LATEST | sed 's/\"//g')
     IFS=: read -r arn aws lambda region account service sname version <<< "$TRIMMED"
-    URL=$(aws lambda get-layer-version --layer-name {{ whos_your_daddy }}-layer-{{ item }} --version-number $version --query 'Content.Location')
-    curl $URL -o latest_{{ item }}.zip
-    zipcmp latest_{{ item }}.zip {{ item }}_layer.zip -q
+    URL=$(aws lambda get-layer-version --layer-name {{ whos_your_daddy }}-layer-{{ item.name }} --version-number $version --query 'Content.Location')
+    curl $URL -o latest_{{ item.name }}.zip
+    zipcmp latest_{{ item.name }}.zip {{ item.name }}_layer.zip -q
     if [ $? -ne 0 ]; then
       aws lambda publish-layer-version \
-      --layer-name {{ whos_your_daddy }}-layer-{{ item }} \
-      --description "custom layer for {{ item }}" \
+      --layer-name {{ whos_your_daddy }}-layer-{{ item.name }} \
+      --description "custom layer for {{ item.name }}" \
       --compatible-runtimes python{{ python_major_version }} \ 
-      --zip-file fileb://{{ item }}_layer.zip
+      --zip-file fileb://{{ item.name }}_layer.zip
     fi
   args:
-    chdir: /opt/py39_layers
-  with_items: "{{ layers }}"
+    chdir: /opt/py39_combo_layers
+  with_items: "{{ combined_layers }}"
 
 - name: Grant permissions!
   shell: |
     LATEST=$(aws lambda list-layer-versions \
-    --layer-name {{ whos_your_daddy }}-layer-{{ item }} \
+    --layer-name {{ whos_your_daddy }}-layer-{{ item.name }} \
     --query 'LayerVersions[0].LayerVersionArn')
     TRIMMED=$(echo $LATEST | sed 's/\"//g')
     IFS=: read -r arn aws lambda region account service sname version <<< "$TRIMMED"
     aws lambda add-layer-version-permission \ 
-    --layer-name {{ whos_your_daddy }}-layer-{{ item }} \
+    --layer-name {{ whos_your_daddy }}-layer-{{ item.name }} \
     --version-number ${version} \ 
-    --statement-id {{ whos_your_daddy }}-layer-{{ item }}-{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=8') }} \ 
+    --statement-id {{ whos_your_daddy }}-layer-{{ item.name }}-{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=8') }} \ 
     --principal "*" \
     --organization-id {{ organization_id }} \ 
     --action lambda:GetLayerVersion
-  with_items: "{{ layers }}"
+  with_items: "{{ combined_layers }}"

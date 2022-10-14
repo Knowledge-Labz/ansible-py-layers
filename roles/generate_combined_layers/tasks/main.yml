@@ -1,0 +1,28 @@
+- name: Ensure our work directory is there
+  file:
+    path: /opt/py39_combo_layers
+    state: directory
+
+- name: Ensure we have a directory per defined layers
+  file:
+    path: /opt/py39_combo_layers/{{ item.name }}
+    state: directory
+  with_items: "{{ combined_layers }}"
+
+- name: Ensure we have a python directory per defined layers to unpack in Lambda
+  file:
+    path: /opt/py39_combo_layers/{{ item.name }}/python
+    state: directory
+  with_items: "{{ combined_layers }}"
+
+- name: iterate over layers and locally install them to their own directory
+  shell: pip3 install {{ item.packages | join(' ') }} -t . --upgrade
+  args:
+    chdir: /opt/py39_combo_layers/{{ item.name }}/python
+  with_items: "{{ combined_layers }}"
+
+- name: iterate over layers and zip them for Lambda to use
+  shell: zip -r ../{{ item.name }}_layer.zip .
+  args:
+    chdir: /opt/py39_combo_layers/{{ item.name }}
+  with_items: "{{ combined_layers }}"
